@@ -10,9 +10,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
       origin: '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      preflightContinue: false,
-      optionsSuccessStatus: 204,
     },
   });
   const httpAdapterHost = app.get(HttpAdapterHost);
@@ -32,7 +29,7 @@ async function bootstrap() {
     .addTag('api')
     .addBearerAuth()
     .build();
-  const configuration = app.get(ConfigService);
+  const configuration: any = app.get(ConfigService);
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, documentFactory);
   await app.listen(configuration.get('app.port'));
