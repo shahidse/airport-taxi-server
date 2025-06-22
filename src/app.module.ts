@@ -1,23 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-// import { ConfigModule } from './config/config.module';
+import { ConfigModule } from './config/config.module';
 import { BcryptModule } from './modules/bcrypt/bcrypt.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { UsersModule } from './modules/users/users.module';
-import { ConfigModule } from '@nestjs/config';
-import configSchema from './config/config.schema';
 
 @Module({
   imports: [
-    // ConfigModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-      load: [configSchema],
-    }),
+    ConfigModule,
     DatabaseModule,
     BcryptModule,
     ThrottlerModule.forRoot([
