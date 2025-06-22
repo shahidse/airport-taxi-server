@@ -5,12 +5,13 @@ import {
   DeepPartial,
   FindManyOptions,
   ObjectId,
+  ObjectLiteral,
 } from 'typeorm';
 import { ICommonRepository } from './common_repository.interface';
 import { Logger } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
-export class CommonRepository<T> implements ICommonRepository<T> {
+export class CommonRepository<T extends ObjectLiteral> implements ICommonRepository<T> {
   private readonly logger = new Logger(CommonRepository.name);
   constructor(private readonly repository: Repository<T>) {
     this.logger.log(`Repository injected into CommonRepository: ${repository}`);
@@ -30,7 +31,7 @@ export class CommonRepository<T> implements ICommonRepository<T> {
   // Find a single record with a filter
   async findOneBy(
     where: FindOptionsWhere<T> | FindOptionsWhere<T>[],
-  ): Promise<T | undefined> {
+  ): Promise<T|null> {
     return this.repository.findOneBy(where);
   }
   async findOne(options: FindOneOptions<T>) {

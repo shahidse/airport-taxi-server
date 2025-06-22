@@ -11,8 +11,8 @@ import { UsersModule } from './modules/users/users.module';
 @Module({
   imports: [
     ConfigModule,
-    // DatabaseModule,
-    // BcryptModule,
+    DatabaseModule,
+    BcryptModule,
     ThrottlerModule.forRoot([
       {
         name: 'short',
@@ -30,7 +30,7 @@ import { UsersModule } from './modules/users/users.module';
         limit: 100,
       },
     ]),
-    // AuthModule,
+    AuthModule,
     UsersModule,
   ],
   controllers: [AppController],

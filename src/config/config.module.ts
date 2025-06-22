@@ -6,7 +6,6 @@ import configuration from './config.schema';
     NestConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
-      envFilePath: ['.env'],
     }),
   ],
 })
