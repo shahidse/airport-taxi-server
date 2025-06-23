@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, Unique, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, Unique } from 'typeorm';
 import { Roles } from './roles.entity';
 import Base from './base.entity';
 
@@ -31,5 +31,4 @@ export class Users extends Base {
   roles: Roles;
   @Column({ nullable: true })
   encryptedPassword?: string;
-  
 }
