@@ -27,8 +27,24 @@ export class Users extends Base {
   country: string;
   @Column({ nullable: true })
   profilePic: string;
+  @Column({ nullable: true })
+  state?: string;
   @ManyToOne(() => Roles, (roles) => roles.users)
   roles: Roles;
   @Column({ nullable: true })
   encryptedPassword?: string;
+  @Column({ nullable: true })
+  postalCode?: string;
+  @Column({ default: false })
+  isActive: boolean;
+  @Column({ default: false })
+  isDeleted: boolean;
+  @Column({ default: false })
+  isEmailVerified: boolean;
+  @Column({ default: false })
+  isPhoneVerified: boolean;
+  @Column({ default: false })
+  isTwoFactorEnabled: boolean;
+  @Column({ default: false })
+  isPasswordReset: boolean;
 }

@@ -58,6 +58,42 @@ export class CreateUserDto {
   @IsString()
   @IsUnique({ tableName: 'users', column: 'userName' })
   userName: string;
+
+  @ApiPropertyOptional({
+    example: '0000',
+    description: 'Street address of the user',
+  })
+  @IsOptional()
+  @IsString()
+  address?: string;
+  @ApiPropertyOptional({
+    example: 'New York',
+    description: 'City of the user',
+  })
+  @IsOptional()
+  @IsString()
+  city?: string;
+  @ApiPropertyOptional({
+    example: 'NY',
+    description: 'State of the user',
+  })
+  @IsOptional()
+  @IsString()
+  state?: string;
+  @ApiPropertyOptional({
+    example: '10001',
+    description: 'Postal code of the user',
+  })
+  @IsOptional()
+  @IsString()
+  postalCode?: string;
+  @ApiPropertyOptional({
+    example: 'USA',
+    description: 'Country of the user',
+  })
+  @IsOptional()
+  @IsString()
+  country?: string;
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
