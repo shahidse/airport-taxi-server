@@ -36,8 +36,8 @@ export class UsersService {
     });
     const hashedPassword = this.bcryptService.hashPassword(password);
     const {
-      password: _,
-      encryptedPassword: _,
+      password: userPassword,
+      encryptedPassword,
       ...user
     } = await this.userRepository.create({
       fullName,
@@ -68,7 +68,7 @@ export class UsersService {
     if (!isAuthourize) {
       throw new UnauthorizedException('Invalid Credentials');
     }
-    let { password: _, encryptedPassword: _, roles, ...userData } = user;
+    let { password, encryptedPassword, roles, ...userData } = user;
     userData = { ...roles, ...userData };
     const token = this.authService.createJwtToken(userData);
     return { userData, token };

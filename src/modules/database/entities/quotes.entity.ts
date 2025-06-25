@@ -1,5 +1,6 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import Base from './base.entity';
+import { Users } from './users.entity';
 
 @Entity('quotes')
 export class Quote extends Base {
@@ -32,4 +33,8 @@ export class Quote extends Base {
 
   @Column({ nullable: true })
   specialInstructions?: string;
+  @ManyToOne(() => Users, (user) => user.quotes, {
+    nullable: false,
+  })
+  user: Users;
 }

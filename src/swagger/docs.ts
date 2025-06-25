@@ -4,21 +4,33 @@ import {
   ApiTags,
   ApiBody,
   ApiBearerAuth,
+  ApiQuery,
+  ApiParam,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
+
+interface ParamOption {
+  name: string;
+  required?: boolean;
+  description?: string;
+  type?: any;
+  example?: any;
+}
 
 interface ApiEndpointOptions {
   summary: string;
   description?: string;
   tags?: string[];
-  authRequired?: boolean; // Add this
-  bodyType?: any; // DTO class
-  bodySchema?: any; // Raw schema
+  authRequired?: boolean;
+  bodyType?: any;
+  bodySchema?: any;
   responses?: {
     status: number;
     description: string;
     schema?: any;
   }[];
+  queryParams?: ParamOption[];
+  pathParams?: ParamOption[];
 }
 
 export function ApiEndpoint(options: ApiEndpointOptions) {
@@ -30,6 +42,8 @@ export function ApiEndpoint(options: ApiEndpointOptions) {
     bodyType,
     bodySchema,
     responses = [],
+    queryParams = [],
+    pathParams = [],
   } = options;
 
   const decorators = [
@@ -63,6 +77,30 @@ export function ApiEndpoint(options: ApiEndpointOptions) {
         status: res.status,
         description: res.description,
         ...(res.schema ? { schema: res.schema } : {}),
+      }),
+    );
+  }
+
+  for (const param of queryParams) {
+    decorators.push(
+      ApiQuery({
+        name: param.name,
+        required: param.required ?? true,
+        description: param.description ?? '',
+        type: param.type ?? String,
+        example: param.example,
+      }),
+    );
+  }
+
+  for (const param of pathParams) {
+    decorators.push(
+      ApiParam({
+        name: param.name,
+        required: param.required ?? true,
+        description: param.description ?? '',
+        type: param.type ?? String,
+        example: param.example,
       }),
     );
   }

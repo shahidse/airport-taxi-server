@@ -1,6 +1,7 @@
-import { Entity, Column, ManyToOne, Unique } from 'typeorm';
+import { Entity, Column, ManyToOne, Unique, OneToMany } from 'typeorm';
 import { Roles } from './roles.entity';
 import Base from './base.entity';
+import { Quote } from './quotes.entity';
 
 @Unique('users', ['email', 'userName'])
 @Entity()
@@ -47,4 +48,9 @@ export class Users extends Base {
   isTwoFactorEnabled: boolean;
   @Column({ default: false })
   isPasswordReset: boolean;
+  @OneToMany(() => Quote, (quotes) => quotes.user, {
+    eager: true,
+    nullable: true,
+  })
+  quotes: Quote[];
 }

@@ -1,14 +1,9 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import {
-  PermissionsTypes,
-  ResourcesTypes,
-  Roles,
-} from '../../constants/role.enum';
+import { PermissionsTypes, Roles } from '../../constants/role.enum';
 import {
   IS_PUBLIC_KEY,
   PERMISSION_KEY,
-  RESOURCES_KEY,
   ROLES_KEY,
 } from '../../decorators/decorators.decorator';
 
@@ -33,15 +28,6 @@ export class RolesGuard implements CanActivate {
       return false;
     }
 
-    const requiredResources = this.reflector.getAllAndOverride<
-      ResourcesTypes[]
-    >(RESOURCES_KEY, [context.getHandler(), context.getClass()]);
-    if (!requiredResources) {
-      return false;
-    }
-    if (requiredResources.includes(ResourcesTypes.NOT_RESOURCES)) {
-      return true;
-    }
     const requiredPermissions = this.reflector.getAllAndOverride<
       PermissionsTypes[]
     >(PERMISSION_KEY, [context.getHandler(), context.getClass()]);
@@ -58,28 +44,6 @@ export class RolesGuard implements CanActivate {
       user.role.includes(role),
     );
     if (!hasRequiredRole) {
-      return false;
-    }
-
-    const hasRequiredResource = requiredResources.every((resource: any) =>
-      user.acl.some((aclEntry: any) => aclEntry.resource.slug === resource),
-    );
-    if (!hasRequiredResource) {
-      return false;
-    }
-
-    const hasRequiredPermission = requiredPermissions.every(
-      (permission: any) => {
-        const permissionCheck = user.acl.some(
-          (aclEntry: any) =>
-            requiredResources.includes(aclEntry.resource.slug) &&
-            aclEntry[permission] == true,
-        );
-        return permissionCheck;
-      },
-    );
-
-    if (!hasRequiredPermission) {
       return false;
     }
 
