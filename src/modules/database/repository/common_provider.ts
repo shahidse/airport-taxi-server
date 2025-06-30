@@ -1,3 +1,5 @@
+import { Feedback } from '../entities/feedback.entity';
+import { Order } from '../entities/order.entity';
 import { Quote } from '../entities/quotes.entity';
 import { Roles } from '../entities/roles.entity';
 import { Users } from '../entities/users.entity';
@@ -7,11 +9,15 @@ export enum Schemas {
   USERS = 'Users',
   ROLES = 'Roles',
   QUOTES = 'Quotes',
+  FEEDBACK = 'Feedback',
+  ORDER = 'Order',
 }
 const schemas = {
   Users,
   Roles,
   Quote,
+  Feedback,
+  Order,
 } as const;
 
 export const createRepositoryProvider = (modelName: Schemas) => ({

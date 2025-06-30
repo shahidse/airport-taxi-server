@@ -8,6 +8,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { QuotesModule } from './modules/quotes/quotes.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
+import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { QuotesModule } from './modules/quotes/quotes.module';
     AuthModule,
     UsersModule,
     QuotesModule,
+    FeedbackModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

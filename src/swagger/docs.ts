@@ -15,6 +15,7 @@ interface ParamOption {
   description?: string;
   type?: any;
   example?: any;
+  default?: any;
 }
 
 interface ApiEndpointOptions {
