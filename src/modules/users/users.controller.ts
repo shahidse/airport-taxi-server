@@ -22,7 +22,7 @@ export class UsersController {
     ],
   })
   @Public()
-  @RolesGuard(Roles.USER)
+  // @RolesGuard(Roles.USER)
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     this.logger.log(`Executing ${this.signup.name}`);
@@ -39,7 +39,7 @@ export class UsersController {
     ],
   })
   @Public()
-  @RolesGuard(Roles.USER)
+  // @RolesGuard(Roles.USER)
   @Post('login')
   async login(@Body() data: LoginDto) {
     this.logger.log(`Executing ${this.login.name}`);

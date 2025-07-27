@@ -9,11 +9,11 @@ import { Order } from '../database/entities/order.entity';
 @Injectable()
 export class FeedbackService {
   constructor(
-    @Inject('FEEDBACKS_REPOSITORY')
+    @Inject('FEEDBACK_REPOSITORY')
     private readonly feedBackRepo: CommonRepository<Feedback>,
     @Inject('USERS_REPOSITORY')
     private readonly userRepo: CommonRepository<Users>,
-    @Inject('ORDERS_REPOSITORY')
+    @Inject('ORDER_REPOSITORY')
     private readonly orderRepo: CommonRepository<Order>,
   ) {}
 

@@ -9,7 +9,7 @@ import { Quote } from '../database/entities/quotes.entity';
 @Injectable()
 export class OrdersService {
   constructor(
-    @Inject('ORDERS_REPOSITORY')
+    @Inject('ORDER_REPOSITORY')
     private ordersRepository: CommonRepository<Order>,
     @Inject('USERS_REPOSITORY')
     private usersRepository: CommonRepository<Users>,
