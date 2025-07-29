@@ -17,6 +17,9 @@ export class Quote extends Base {
   passengers: number;
 
   @Column()
+  luggage: number;
+  
+  @Column()
   vehicleType: string;
 
   @Column({ type: 'float' })

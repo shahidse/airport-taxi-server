@@ -13,8 +13,12 @@ import { QuotesService } from './quotes.service';
 import { CreateQuoteDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
 import { ApiEndpoint } from 'src/swagger/docs';
-
-@Controller('quotes')
+import { PermissionsTypes, Roles } from '../../constants/role.enum';
+import {
+  Permissions,
+  Roles as RolesGuard,
+} from '../../decorators/decorators.decorator';
+@Controller({ path: 'quotes', version: '1' })
 export class QuotesController {
   constructor(private readonly quotesService: QuotesService) {}
   @ApiEndpoint({
@@ -25,6 +29,8 @@ export class QuotesController {
     responses: [{ status: 201, description: 'Quote created' }],
     authRequired: true,
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.WRITE)
   @Post()
   create(@Body() dto: CreateQuoteDto, @Req() req: any) {
     return this.quotesService.create(dto, req.user);
@@ -58,6 +64,8 @@ export class QuotesController {
       },
     ],
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.READ)
   @Get()
   findAll(
     @Query('page') page: string = '1',
@@ -90,6 +98,8 @@ export class QuotesController {
       },
     ],
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.READ)
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: any) {
     return this.quotesService.findOne(+id, req.user);
@@ -118,6 +128,8 @@ export class QuotesController {
       },
     ],
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.UPDATE)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -149,6 +161,8 @@ export class QuotesController {
       },
     ],
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.DELETE)
   @Delete(':id')
   remove(@Param('id') id: string, @Req() req: any) {
     return this.quotesService.remove(+id, req.user);
