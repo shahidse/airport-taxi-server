@@ -30,7 +30,6 @@ export class CreateQuoteDto {
   isRoundTrip: boolean;
 
   @IsOptional()
-  @IsDateString()
   returnDateTime?: Date;
 
   @IsOptional()

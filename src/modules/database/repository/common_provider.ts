@@ -1,8 +1,10 @@
 import { Feedback } from '../entities/feedback.entity';
 import { Order } from '../entities/order.entity';
-import { Quote } from '../entities/quotes.entity';
+import { Quotes } from '../entities/quotes.entity';
 import { Roles } from '../entities/roles.entity';
 import { Users } from '../entities/users.entity';
+import { VehicleCategory } from '../entities/vehicleCategory.entity';
+import { Vehicle } from '../entities/vehicles.entity';
 import { CommonRepository } from './common_repository'; // Adjust the import path
 import { DataSource, Repository } from 'typeorm';
 export enum Schemas {
@@ -11,13 +13,17 @@ export enum Schemas {
   QUOTES = 'Quotes',
   FEEDBACK = 'Feedback',
   ORDER = 'Order',
+  VEHICLE_CATEGORY = 'VehicleCategory',
+  VEHICLE = 'Vehicle',
 }
 const schemas = {
   Users,
   Roles,
-  Quote,
+  Quotes,
   Feedback,
   Order,
+  VehicleCategory,
+  Vehicle,
 } as const;
 
 export const createRepositoryProvider = (modelName: Schemas) => ({

@@ -4,7 +4,7 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { CommonRepository } from '../database/repository/common_repository';
 import { Order } from '../database/entities/order.entity';
 import { Users } from '../database/entities/users.entity';
-import { Quote } from '../database/entities/quotes.entity';
+import { Quotes } from '../database/entities/quotes.entity';
 
 @Injectable()
 export class OrdersService {
@@ -14,7 +14,7 @@ export class OrdersService {
     @Inject('USERS_REPOSITORY')
     private usersRepository: CommonRepository<Users>,
     @Inject('QUOTES_REPOSITORY')
-    private quotesRepository: CommonRepository<Quote>,
+    private quotesRepository: CommonRepository<Quotes>,
   ) {}
   async create(createOrderDto: CreateOrderDto, userInfo: any) {
     const user = await this.usersRepository.findOne({

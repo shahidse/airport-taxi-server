@@ -10,6 +10,8 @@ import { UsersModule } from './modules/users/users.module';
 import { QuotesModule } from './modules/quotes/quotes.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { VehiclesCategoriesModule } from './modules/vehicles-categories/vehicles-categories.module';
+import { VehiclesModule } from './modules/vehicles/vehicles.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { OrdersModule } from './modules/orders/orders.module';
     QuotesModule,
     FeedbackModule,
     OrdersModule,
+    VehiclesCategoriesModule,
+    VehiclesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

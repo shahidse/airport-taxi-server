@@ -1,5 +1,5 @@
 import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
-import { Quote } from './quotes.entity';
+import { Quotes } from './quotes.entity';
 import { Users } from './users.entity'; // Optional, if you support logged-in users
 import Base from './base.entity';
 
@@ -11,9 +11,9 @@ export class Order extends Base {
   @ManyToOne(() => Users, { nullable: true }) // Optional if you allow guest bookings
   user?: Users;
 
-  @OneToOne(() => Quote, { cascade: true })
+  @OneToOne(() => Quotes, { cascade: true })
   @JoinColumn()
-  quote: Quote;
+  quote: Quotes;
 
   @Column({
     type: 'enum',
