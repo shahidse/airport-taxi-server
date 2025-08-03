@@ -41,6 +41,7 @@ export class QuotesService {
   }
 
   async findOne(id: number, userInfo: any): Promise<Quotes> {
+    if (!id) throw new NotFoundException('Quote ID is required');
     const quote = await this.quoteRepo.findOne({
       where: { id, user: { id: userInfo.id } },
     });
