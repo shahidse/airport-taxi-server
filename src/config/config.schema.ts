@@ -19,6 +19,10 @@ interface Config {
     password: string;
     database: string;
   };
+  stripe: {
+    secretKey: string;
+    apiVersion: string;
+  };
 }
 
 const defaultConfig: Config = {
@@ -41,6 +45,10 @@ const defaultConfig: Config = {
     user: 'root',
     password: 'password',
     database: 'test',
+  },
+  stripe: {
+    secretKey: 'your_stripe_secret_key',
+    apiVersion: '2023-08-16',
   },
 };
 
@@ -70,5 +78,10 @@ export default () => ({
     user: process.env.MYSQL_USER || defaultConfig.mysql.user,
     password: process.env.MYSQL_PASSWORD || defaultConfig.mysql.password,
     database: process.env.MYSQL_DATABASE || defaultConfig.mysql.database,
+  },
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY || defaultConfig.stripe.secretKey,
+    apiVersion:
+      process.env.STRIPE_API_VERSION || defaultConfig.stripe.apiVersion,
   },
 });
