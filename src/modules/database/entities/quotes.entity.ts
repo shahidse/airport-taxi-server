@@ -37,6 +37,8 @@ export class Quotes extends Base {
 
   @Column({ nullable: true })
   specialInstructions?: string;
+  @Column({ nullable: true })
+  distanceKm: number;
   @ManyToOne(() => Users, (user) => user.quotes, { nullable: true })
   user: Users;
   @OneToOne(() => Order, (order) => order.quote, { nullable: true })

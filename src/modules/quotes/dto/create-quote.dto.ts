@@ -39,4 +39,10 @@ export class CreateQuoteDto {
   @IsOptional()
   @IsString()
   specialInstructions?: string;
+  @IsOptional()
+  @IsNumber()
+  luggage?: number;
+  @IsOptional()
+  @IsNumber()
+  distanceKm?: number;
 }
