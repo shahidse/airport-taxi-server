@@ -73,4 +73,16 @@ export class UsersService {
     const token = this.authService.createJwtToken(userData);
     return { userData, token };
   }
+  async getUserInfo(userInfo: any) {
+    const user = await this.userRepository.findOne({
+      where: { id: userInfo.id },
+      relations: ['roles', 'quotes'],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found!');
+    }
+    let { password, encryptedPassword, roles, ...userData } = user;
+    userData = { ...roles, ...userData };
+    return { userData };
+  }
 }

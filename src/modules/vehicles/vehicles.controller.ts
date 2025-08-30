@@ -14,7 +14,7 @@ import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { Public } from 'src/decorators/decorators.decorator';
 import { ApiEndpoint } from 'src/swagger/docs';
 
-@Controller('vehicles')
+@Controller({ path: 'vehicles', version: '1' })
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 

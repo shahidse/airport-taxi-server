@@ -14,8 +14,13 @@ import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { ApiEndpoint } from '../../swagger/docs';
-
-@Controller('orders')
+import {
+  Permissions,
+  Public,
+  Roles as RolesGuard,
+} from 'src/decorators/decorators.decorator';
+import { PermissionsTypes, Roles } from 'src/constants/role.enum';
+@Controller({ path: 'orders', version: '1' })
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
   private readonly logger = new Logger(OrdersController.name);
@@ -44,6 +49,8 @@ export class OrdersController {
     ],
     authRequired: true,
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.WRITE)
   @Post()
   create(@Body() createOrderDto: CreateOrderDto, @Req() req: any) {
     this.logger.log(`Creating order for user: ${req.user.id}`);
@@ -87,6 +94,8 @@ export class OrdersController {
     ],
     authRequired: true,
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.READ)
   @Get()
   findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
     return this.ordersService.findAll(page, limit);
@@ -124,6 +133,8 @@ export class OrdersController {
     ],
     authRequired: true,
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.READ)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findOne(+id);
@@ -166,6 +177,8 @@ export class OrdersController {
     ],
     authRequired: true,
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.UPDATE)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -207,6 +220,8 @@ export class OrdersController {
     ],
     authRequired: true,
   })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.DELETE)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
