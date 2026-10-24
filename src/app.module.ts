@@ -12,6 +12,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { VehiclesCategoriesModule } from './modules/vehicles-categories/vehicles-categories.module';
 import { VehiclesModule } from './modules/vehicles/vehicles.module';
+import { StripeModule } from './modules/stripe/stripe.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { VehiclesModule } from './modules/vehicles/vehicles.module';
     OrdersModule,
     VehiclesCategoriesModule,
     VehiclesModule,
+    StripeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

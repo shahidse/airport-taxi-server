@@ -7,13 +7,14 @@ import {
   Param,
   Delete,
   Req,
+  Query,
 } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
 import { ApiEndpoint } from 'src/swagger/docs';
 
-@Controller('feedback')
+@Controller({ path: 'feedback', version: '1' })
 export class FeedbackController {
   constructor(private readonly feedbackService: FeedbackService) {}
   @ApiEndpoint({
@@ -58,8 +59,11 @@ export class FeedbackController {
     ],
   })
   @Get()
-  findAll() {
-    return this.feedbackService.findAll();
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.feedbackService.findAll(+page, +limit);
   }
   @ApiEndpoint({
     summary: 'Get Feedback by ID',

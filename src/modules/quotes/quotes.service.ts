@@ -19,7 +19,31 @@ export class QuotesService {
   async create(dto: CreateQuoteDto, userInfo: any): Promise<Quotes> {
     const user = await this.userRepo.findOne({ where: { id: userInfo.id } });
     if (!user) throw new NotFoundException('User not found');
-    const quote = this.quoteRepo.create({ ...dto, user });
+
+    let estimatedFare = Number(dto.estimatedFare || 0);
+    if (estimatedFare <= 0) {
+      // Automatic Fare Calculation fallback
+      const dist = Number(dto.distanceKm || 5);
+      const vehicleLower = (dto.vehicleType || 'standard').toLowerCase();
+      let baseRate = 10;
+      let perKm = 1.5;
+      if (vehicleLower.includes('executive') || vehicleLower.includes('estate') || vehicleLower.includes('business')) {
+        baseRate = 20;
+        perKm = 2.5;
+      } else if (vehicleLower.includes('luxury') || vehicleLower.includes('mpv')) {
+        baseRate = 35;
+        perKm = 4.0;
+      }
+      let calculated = baseRate + dist * perKm;
+      if (dto.isRoundTrip) calculated *= 1.9;
+      estimatedFare = parseFloat(calculated.toFixed(2));
+    }
+
+    const quote = await this.quoteRepo.create({
+      ...dto,
+      estimatedFare,
+      user,
+    });
     return quote;
   }
 
@@ -27,8 +51,10 @@ export class QuotesService {
     userInfo: any,
     page: number,
     limit: number,
-  ): Promise<{ data: Quotes[]; pageCount: number }> {
-    const total = await this.quoteRepo.count();
+  ): Promise<{ data: Quotes[]; pageCount: number; total: number }> {
+    const total = await this.quoteRepo.count({
+      where: { user: { id: userInfo.id } } as any,
+    });
     const data = await this.quoteRepo.findAll({
       where: { user: { id: userInfo.id } },
       skip: (page - 1) * limit,
@@ -36,8 +62,8 @@ export class QuotesService {
       order: { createdAt: 'DESC' },
       relations: ['user'],
     });
-    const pageCount = Math.ceil(total / limit);
-    return { data, pageCount };
+    const pageCount = Math.max(1, Math.ceil(total / limit));
+    return { data, pageCount, total };
   }
 
   async findOne(id: number, userInfo: any): Promise<Quotes> {

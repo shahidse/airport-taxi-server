@@ -97,9 +97,14 @@ export class OrdersController {
   @RolesGuard(Roles.USER)
   @Permissions(PermissionsTypes.READ)
   @Get()
-  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
-    return this.ordersService.findAll(page, limit);
+  findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Req() req: any,
+  ) {
+    return this.ordersService.findAll(req.user, +page, +limit);
   }
+
   @ApiEndpoint({
     summary: 'Get order by ID',
     description: 'Retrieves a specific order by its ID.',
@@ -136,8 +141,40 @@ export class OrdersController {
   @RolesGuard(Roles.USER)
   @Permissions(PermissionsTypes.READ)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ordersService.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.ordersService.findOne(+id, req.user);
+  }
+
+  @ApiEndpoint({
+    summary: 'Cancel an order',
+    description: 'Cancels an existing order by its ID.',
+    tags: ['Orders'],
+    pathParams: [
+      {
+        name: 'id',
+        required: true,
+        description: 'ID of the order to cancel',
+        type: 'number',
+        example: 1,
+      },
+    ],
+    responses: [
+      {
+        status: 200,
+        description: 'Order cancelled successfully',
+      },
+      {
+        status: 404,
+        description: 'Order not found',
+      },
+    ],
+    authRequired: true,
+  })
+  @RolesGuard(Roles.USER)
+  @Permissions(PermissionsTypes.UPDATE)
+  @Patch(':id/cancel')
+  cancel(@Param('id') id: string, @Req() req: any) {
+    return this.ordersService.cancelOrder(+id, req.user);
   }
   @ApiEndpoint({
     summary: 'Update an order',

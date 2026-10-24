@@ -1,17 +1,20 @@
-import { IsString, IsEnum, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsEnum, IsBoolean, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateOrderDto {
-  @ApiProperty({ example: 'ABC123XYZ', description: 'Booking reference code' })
+  @ApiPropertyOptional({ example: 'ATX-2026-X94B', description: 'Booking reference code' })
+  @IsOptional()
   @IsString()
-  bookingReference: string;
+  bookingReference?: string;
 
   @ApiProperty({
     type: 'number',
-    example: '15216',
+    example: 1,
     description: 'Reference to an existing Quote record',
   })
-  quoteId: number;
+  @IsOptional()
+  @IsNumber()
+  quoteId?: number;
 
   @ApiProperty({
     enum: ['pending', 'confirmed', 'completed', 'cancelled'],

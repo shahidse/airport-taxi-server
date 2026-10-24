@@ -18,11 +18,13 @@ export class StripeService {
   }
 
   async createPaymentIntent(amount: number, email: string) {
+    // Ensure amount is in cents and at least 50 cents (Stripe min charge)
+    const amountInCents = Math.max(50, Math.round(Number(amount || 10) * 100));
     const intent = await this.getStripeInstance().paymentIntents.create({
-      amount,
+      amount: amountInCents,
       currency: 'usd',
-      receipt_email: email,
+      receipt_email: email || undefined,
     });
-    return { clientSecret: intent.client_secret };
+    return { clientSecret: intent.client_secret, amountInCents };
   }
 }

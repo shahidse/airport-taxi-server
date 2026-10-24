@@ -19,7 +19,7 @@ export class FeedbackService {
 
   async create(createFeedbackDto: CreateFeedbackDto, userInfo: any) {
     // Validate order exists
-    const order: any = this.orderRepo.findOne({
+    const order: any = await this.orderRepo.findOne({
       where: { id: createFeedbackDto.orderId },
     });
     const user: any = await this.userRepo.findOne({
@@ -33,33 +33,40 @@ export class FeedbackService {
     return feedback;
   }
 
-  findAll(page: number = 1, limit: number = 10) {
-    return this.feedBackRepo.findAll({
+  async findAll(page: number = 1, limit: number = 10) {
+    const total = await this.feedBackRepo.count();
+    const data = await this.feedBackRepo.findAll({
       skip: (page - 1) * limit,
       take: limit,
-      relations: ['users', 'orders'],
+      relations: ['user', 'order'],
+      order: { createdAt: 'DESC' },
     });
+    return {
+      data,
+      total,
+      page,
+      limit,
+      pageCount: Math.max(1, Math.ceil(total / limit)),
+    };
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return this.feedBackRepo.findOne({
       where: { id },
-      relations: ['users', 'orders'],
+      relations: ['user', 'order'],
     });
   }
 
-  update(id: number, updateFeedbackDto: UpdateFeedbackDto) {
-    return this.feedBackRepo.update({ id }, updateFeedbackDto).then(() => {
-      return this.feedBackRepo.findOne({
-        where: { id },
-        relations: ['users', 'orders'],
-      });
+  async update(id: number, updateFeedbackDto: UpdateFeedbackDto) {
+    await this.feedBackRepo.update({ id }, updateFeedbackDto);
+    return this.feedBackRepo.findOne({
+      where: { id },
+      relations: ['user', 'order'],
     });
   }
 
-  remove(id: number) {
-    return this.feedBackRepo.delete({ id }).then(() => {
-      return { message: 'Feedback deleted successfully' };
-    });
+  async remove(id: number) {
+    await this.feedBackRepo.delete({ id });
+    return { message: 'Feedback deleted successfully' };
   }
 }

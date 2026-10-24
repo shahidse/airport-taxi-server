@@ -31,9 +31,16 @@ export class UsersService {
       city,
       country,
     } = createUserDto;
-    const roleInfo = await this.roleRepository.findOne({
-      where: { code: '0000' },
+    let roleInfo = await this.roleRepository.findOne({
+      where: [{ code: '1111' }, { code: '0000' }, { role: 'User' }],
     });
+    if (!roleInfo) {
+      roleInfo = await this.roleRepository.create({
+        role: 'User',
+        code: '1111',
+        secret: 'user',
+      });
+    }
     const hashedPassword = this.bcryptService.hashPassword(password);
     const {
       password: userPassword,
@@ -41,10 +48,10 @@ export class UsersService {
       ...user
     } = await this.userRepository.create({
       fullName,
-      userName,
+      userName: userName || email.split('@')[0],
       email,
       password: hashedPassword,
-      roles: roleInfo || undefined,
+      roles: roleInfo,
       state,
       address,
       city,
@@ -68,8 +75,12 @@ export class UsersService {
     if (!isAuthourize) {
       throw new UnauthorizedException('Invalid Credentials');
     }
-    let { password, encryptedPassword, roles, ...userData } = user;
-    userData = { ...roles, ...userData };
+    const { password, encryptedPassword, roles, ...userDataRaw } = user;
+    const userData = {
+      ...userDataRaw,
+      role: roles?.role || 'User',
+      roleId: roles?.id,
+    };
     const token = this.authService.createJwtToken(userData);
     return { userData, token };
   }
@@ -81,8 +92,12 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found!');
     }
-    let { password, encryptedPassword, roles, ...userData } = user;
-    userData = { ...roles, ...userData };
+    const { password, encryptedPassword, roles, ...userDataRaw } = user;
+    const userData = {
+      ...userDataRaw,
+      role: roles?.role || 'User',
+      roleId: roles?.id,
+    };
     return { userData };
   }
 }

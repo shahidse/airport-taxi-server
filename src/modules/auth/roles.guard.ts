@@ -12,41 +12,35 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const isPublic = this.reflector.get<boolean>(
+    const isPublic = this.reflector.getAllAndOverride<boolean>(
       IS_PUBLIC_KEY,
-      context.getHandler(),
+      [context.getHandler(), context.getClass()],
     );
     if (isPublic) {
       return true;
+    }
+
+    const { user } = context.switchToHttp().getRequest();
+    if (!user) {
+      return false;
     }
 
     const requiredRoles = this.reflector.getAllAndOverride<Roles[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    if (!requiredRoles) {
-      return false;
+
+    // If no specific role is required, allow any authenticated user
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
     }
 
-    const requiredPermissions = this.reflector.getAllAndOverride<
-      PermissionsTypes[]
-    >(PERMISSION_KEY, [context.getHandler(), context.getClass()]);
-    if (!requiredPermissions) {
-      return false;
-    }
+    const userRole = String(user.role || '').toLowerCase();
+    const hasRequiredRole = requiredRoles.some((role) => {
+      const targetRole = String(role).toLowerCase();
+      return userRole === targetRole || userRole.includes(targetRole);
+    });
 
-    const { user } = context.switchToHttp().getRequest();
-    if (!user || !user.role) {
-      return false;
-    }
-
-    const hasRequiredRole = requiredRoles.some((role) =>
-      user.role.includes(role),
-    );
-    if (!hasRequiredRole) {
-      return false;
-    }
-
-    return true;
+    return hasRequiredRole;
   }
 }

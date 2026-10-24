@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { CommonRepository } from '../database/repository/common_repository';
@@ -16,65 +16,111 @@ export class OrdersService {
     @Inject('QUOTES_REPOSITORY')
     private quotesRepository: CommonRepository<Quotes>,
   ) {}
+
   async create(createOrderDto: CreateOrderDto, userInfo: any) {
     const user = await this.usersRepository.findOne({
       where: { id: userInfo.id },
     });
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
-    const quote: any = await this.quotesRepository.findOne({
-      where: { id: createOrderDto.quoteId },
-    });
+
+    let quote: any = null;
+    if (createOrderDto.quoteId) {
+      quote = await this.quotesRepository.findOne({
+        where: { id: createOrderDto.quoteId },
+      });
+    }
+
+    const bookingReference =
+      createOrderDto.bookingReference ||
+      `ATX-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const order = await this.ordersRepository.create({
       user,
       quote,
       ...createOrderDto,
+      bookingReference,
+      contactName: createOrderDto.contactName || user.fullName,
+      contactEmail: createOrderDto.contactEmail || user.email,
+      contactPhone: createOrderDto.contactPhone || user.phone,
     });
     return order;
   }
 
-  findAll(page: number = 1, limit: number = 10) {
+  async findAll(userInfo: any, page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
     const take = limit;
-    const orders = this.ordersRepository.findAll({
+    const isUserRole = String(userInfo.role || '').toLowerCase() === 'user';
+    const whereClause: any = isUserRole ? { user: { id: userInfo.id } } : {};
+
+    const total = await this.ordersRepository.count({
+      where: whereClause,
+    });
+
+    const orders = await this.ordersRepository.findAll({
+      where: whereClause,
       skip,
       take,
-      order: { updatedAt: 'DESC' },
+      relations: ['user', 'quote'],
+      order: { createdAt: 'DESC' },
     });
-    return orders;
+
+    return {
+      data: orders,
+      total,
+      page,
+      limit,
+      pageCount: Math.max(1, Math.ceil(total / limit)),
+    };
   }
 
-  async findOne(id: number) {
-    const order = await this.ordersRepository.findOne({ where: { id } });
+  async findOne(id: number, userInfo: any) {
+    const order = await this.ordersRepository.findOne({
+      where: { id },
+      relations: ['user', 'quote'],
+    });
     if (!order) {
-      throw new Error(`Order with id ${id} not found`);
+      throw new NotFoundException(`Order with id ${id} not found`);
+    }
+
+    const isUserRole = String(userInfo.role || '').toLowerCase() === 'user';
+    if (isUserRole && order.user?.id !== userInfo.id) {
+      throw new UnauthorizedException('You are not authorized to view this order');
     }
 
     return order;
+  }
+
+  async cancelOrder(id: number, userInfo: any) {
+    const order = await this.findOne(id, userInfo);
+    await this.ordersRepository.update({ id }, { status: 'cancelled' } as any);
+    return this.findOne(id, userInfo);
   }
 
   async update(id: number, updateOrderDto: UpdateOrderDto, userInfo: any) {
-    const order = await this.ordersRepository.findOne({ where: { id } });
+    const order = await this.ordersRepository.findOne({
+      where: { id },
+      relations: ['user'],
+    });
     if (!order) {
-      throw new Error(`Order with id ${id} not found`);
+      throw new NotFoundException(`Order with id ${id} not found`);
     }
-    if (userInfo.id !== order.user?.id) {
-      throw new Error('You are not authorized to update this order');
+
+    const isUserRole = String(userInfo.role || '').toLowerCase() === 'user';
+    if (isUserRole && userInfo.id !== order.user?.id) {
+      throw new UnauthorizedException('You are not authorized to update this order');
     }
-    const updatedOrder = await this.ordersRepository.update(id, updateOrderDto);
-    if (!updatedOrder) {
-      throw new Error(`Failed to update order with id ${id}`);
-    }
-    return updatedOrder;
+
+    await this.ordersRepository.update({ id }, updateOrderDto);
+    return this.findOne(id, userInfo);
   }
 
   async remove(id: number) {
     const order = await this.ordersRepository.findOne({ where: { id } });
     if (!order) {
-      throw new Error(`Order with id ${id} not found`);
+      throw new NotFoundException(`Order with id ${id} not found`);
     }
-    return this.ordersRepository.delete(id);
+    return this.ordersRepository.delete({ id });
   }
 }

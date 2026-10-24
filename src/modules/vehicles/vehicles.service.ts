@@ -33,15 +33,20 @@ export class VehiclesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} vehicle`;
+  async findOne(id: number) {
+    return this.vehicleRepository.findOne({
+      where: { id },
+      relations: ['category', 'driver'],
+    });
   }
 
-  update(id: number, updateVehicleDto: UpdateVehicleDto) {
-    return `This action updates a #${id} vehicle`;
+  async update(id: number, updateVehicleDto: UpdateVehicleDto) {
+    await this.vehicleRepository.update({ id }, updateVehicleDto as any);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} vehicle`;
+  async remove(id: number) {
+    await this.vehicleRepository.delete({ id });
+    return { message: 'Vehicle deleted successfully' };
   }
 }
